@@ -11,6 +11,9 @@ import {bool_t, int32_t, void_t} from "bdsx/nativetype";
 import * as Path from "path";
 import {events} from "bdsx/event";
 import {pdbcache} from "bdsx/pdbcache";
+import {ServerInstance} from "bdsx/bds/server";
+import {LevelData} from "bdsx/bds/level";
+import {procHacker} from "bdsx/prochacker";
 
 export enum saveChunkResult {
     Success,

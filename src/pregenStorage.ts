@@ -12,6 +12,12 @@ import isFileSync = fsutil.isFileSync;
 import isDirectorySync = fsutil.isDirectorySync;
 import Timeout = NodeJS.Timeout;
 import isDecayed = decay.isDecayed;
+import {procHacker} from "bdsx/prochacker";
+import {bool_t} from "bdsx/nativetype";
+import {ServerInstance} from "bdsx/bds/server";
+import {LevelData} from "bdsx/bds/level";
+import {events} from "bdsx/event";
+import {serverProperties} from "bdsx/serverproperties";
 
 const PREGEN_BACKUP_FOLDER = '../pregenData_backups/';
 
@@ -86,7 +92,7 @@ export class Pregen {
     static fromFileData(dimensionId: DimensionId) {
         const path = createPregenDataPath(dimensionId);
 
-        if (!existsSync(path) || !isFileSync(path)) {
+        if (!isFileSync(path)) {
             return undefined;
         }
 
@@ -435,6 +441,10 @@ function _pregenTick(pregen: Pregen) {
     for (let i = 0; i < checkingChunks.length; i++) {
         const chunkPos = checkingChunks[i];
 
+        if (pregen.currentChunkInfo[i] === ChunkState.Done) {
+            continue;
+        }
+
         // Try and save the chunk
         const res = saveChunk(chunkPos, pregen.dimensionId);
 
@@ -495,3 +505,16 @@ function createIdleChunkInfo() {
         ChunkState.InProgress
     ]
 }
+
+export const isUsingClientSideChunkGen = procHacker.js(
+    '?_useClientSideChunkGeneration@ServerInstance@@AEBA_NPEAVLevelData@@@Z',
+    bool_t,
+    {this: ServerInstance},
+    LevelData,
+);
+
+export let clientSideChunkGenEnabled: boolean;
+
+events.serverOpen.on(() => {
+    clientSideChunkGenEnabled = serverProperties["client-side-chunk-generation-enabled"] === "true";
+})

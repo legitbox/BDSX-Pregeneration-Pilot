@@ -3,7 +3,7 @@ import {command} from "bdsx/command";
 import {CommandPermissionLevel, CommandPosition} from "bdsx/bds/command";
 import {int32_t} from "bdsx/nativetype";
 import {DimensionId} from "bdsx/bds/actor";
-import {Pregen, pregens} from "./pregenStorage";
+import {clientSideChunkGenEnabled, Pregen, pregens} from "./pregenStorage";
 import {SerializableVec3} from "./SerializableVec3";
 import {handleRelativeCommandPosCords} from "./utils";
 
@@ -16,6 +16,11 @@ events.serverOpen.on(() => {
 
             if (player === null || !player.isPlayer()) {
                 output.error('Command needs to be ran by a player!');
+                return;
+            }
+
+            if (clientSideChunkGenEnabled) {
+                output.error("You can't use this plugin while client side chunk gen is enabled!\nDisable it in server.properties!");
                 return;
             }
 
@@ -99,6 +104,11 @@ events.serverOpen.on(() => {
 
             if (player === null || !player.isPlayer()) {
                 output.error('Command needs to be ran by a player');
+                return;
+            }
+
+            if (clientSideChunkGenEnabled) {
+                output.error("You can't use this plugin while client side chunk gen is enabled!\nDisable it in server.properties!");
                 return;
             }
 
